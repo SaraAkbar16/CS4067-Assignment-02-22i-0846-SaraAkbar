@@ -3,13 +3,12 @@ from fastapi import FastAPI, Depends, Request, HTTPException, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
-from first.database import engine, SessionLocal
-from first import models
+from database import engine, SessionLocal
+import models
+
 import requests
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
-from typing import Optional
 import os
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -23,11 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Template directory
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=".")
 
 # Create tables
 models.Base.metadata.create_all(bind=engine)
@@ -56,11 +51,13 @@ async def login(username: str = Form(...), password: str = Form(...), db: Sessio
 def welcome_page(request: Request, name: str = "Guest"):
     return templates.TemplateResponse("welcome.html", {"request": request, "name": name})
 
-@app.get("/{page}")
-def serve_page(request: Request, page: str, name: str = "Guest"):
-    if page not in ["welcome", "index1.html"]:
-        return {"detail": "Not Found"}
-    return templates.TemplateResponse(f"{page}", {"request": request, "name": name})
+@app.get("/page/{page_name}")
+def serve_dynamic_page(request: Request, page_name: str, name: str = "Guest"):
+    template_path = f"{page_name}.html"
+    try:
+        return templates.TemplateResponse(template_path, {"request": request, "name": name})
+    except:
+        raise HTTPException(status_code=404, detail="Page not found")
 
 @app.get("/check_user")
 def check_user(name: str, db: Session = Depends(get_db)):
@@ -75,10 +72,9 @@ def get_events(request: Request):
         response = requests.get(SPRING_BOOT_API)
         response.raise_for_status()
         events = response.json()
-        
         return templates.TemplateResponse("index1.html", {"request": request, "events": events})
     except requests.exceptions.RequestException:
         raise HTTPException(status_code=500, detail="Failed to fetch events from Java API")
 
 if __name__ == "__main__":
-    uvicorn.run("first.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)

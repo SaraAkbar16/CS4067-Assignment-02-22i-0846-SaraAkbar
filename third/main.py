@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request, Query, WebSocket
 from sqlalchemy.orm import Session
 from database import get_db, Booking, BookingData
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +8,6 @@ import sys
 import os
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi import Request, Query, WebSocket, HTTPException
 
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
@@ -24,7 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory=".")
+# FIXED: Now this will always point to the current 'third' folder where index2.html lives
+templates = Jinja2Templates(directory=os.path.dirname(__file__))
 
 
 # RabbitMQ Consumer

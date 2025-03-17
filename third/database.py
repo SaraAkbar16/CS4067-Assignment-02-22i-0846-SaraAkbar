@@ -3,9 +3,14 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
+import os
 
-# PostgreSQL Database URL (Ensure your credentials are correct)
-DATABASE_URL = "postgresql://postgres:sara2020@localhost/users"
+# Get DATABASE_URL from environment (Docker will provide it)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+# Ensure DATABASE_URL is set
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable not set")
 
 # Set up database connection
 engine = create_engine(DATABASE_URL)
@@ -28,15 +33,12 @@ Base.metadata.create_all(bind=engine)
 def get_db():
     db = SessionLocal()
     try:
-        print("Database session started")  # Debugging
         yield db
     finally:
         db.close()
-        print("Database session closed")  # Debugging
-
 
 # Define Pydantic model for request validation
 class BookingData(BaseModel):
-    name: str  # Updated to match the `Booking` table
+    name: str
     event: int
     payment: int
