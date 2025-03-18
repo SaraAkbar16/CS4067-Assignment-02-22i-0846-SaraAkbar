@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-sara2020}
+      POSTGRES_DB: ${DB_NAME:-users}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  service-first:
+    build:
+      context: ./first
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-sara2020}@db:5432/${DB_NAME:-users}
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./first:/app
+    command: ["python", "main.py"]
+
+
+  service-zero:
+    build:
+      context: ./zero
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENV_VAR_ZERO=value6
+    restart: always
+
+  service-login:
+    build:
+      context: ./login
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://postgres:sara2020@db:5432/users
+      - ENV_VAR_LOGIN=value5
+    ports:
+      - "8002:8002"
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+  postgres_data:

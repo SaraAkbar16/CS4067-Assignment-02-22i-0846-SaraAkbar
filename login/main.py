@@ -37,7 +37,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
     await conn.execute("INSERT INTO users (name, password) VALUES ($1, $2)", username, password)
     await conn.close()
     
-    return JSONResponse(content={"status": "success", "message": "User registered successfully!", "redirect_url": "http://127.0.0.1:8001"})
+    return JSONResponse(content={"status": "success", "message": "User registered successfully!", "redirect_url": "http://localhost:8001"})
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8002)

@@ -5,7 +5,6 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from database import engine, SessionLocal
 import models
-
 import requests
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 import os
@@ -13,7 +12,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -34,10 +32,11 @@ def get_db():
         yield db
     finally:
         db.close()
-
+        
 @app.get("/")
 def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
+
 
 @app.post("/login")
 async def login(username: str = Form(...), password: str = Form(...), db: Session = Depends(get_db)):

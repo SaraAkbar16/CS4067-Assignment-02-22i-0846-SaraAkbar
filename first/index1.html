@@ -148,7 +148,7 @@
         let selectedEventIds = new Set(); // Use Set to track selected events
 
         function loadEvents() {
-            fetch("http://127.0.0.1:8080/api/events")
+            fetch("http://localhost:8080/api/events")
                 .then(response => {
                     if (!response.ok) throw new Error("Failed to load events");
                     return response.json();
@@ -201,7 +201,7 @@
                 const name = document.getElementById("username").textContent; // Get the username
                 const eventIds = Array.from(selectedEventIds).join(","); // Convert Set to a comma-separated string
                 
-                window.location.href = `http://127.0.0.1:8003/index2?username=${encodeURIComponent(name)}&eventIds=${encodeURIComponent(eventIds)}`;
+                window.location.href = `http://localhost:8003/index2?username=${encodeURIComponent(name)}&eventIds=${encodeURIComponent(eventIds)}`;
             }
         }
     </script>
