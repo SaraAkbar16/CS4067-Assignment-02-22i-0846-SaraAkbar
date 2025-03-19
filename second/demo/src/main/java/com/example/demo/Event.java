@@ -3,15 +3,14 @@ package com.example.demo;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "event_listings") // Match MongoDB collection name
+@Document(collection = "event_listings")
 public class Event {
     @Id
-    private String id;
-
-    private String event_name; // Matches MongoDB's field
+    private Integer id;
+    private String event_name;
     private String location;
-    private String timing; // Matches MongoDB's 'timing' field
-    private int ticket_price; // Matches MongoDB's 'ticket_price' field
+    private String timing;
+    private Integer ticket_price;
 
     // ✅ Constructors
     public Event() {
@@ -25,7 +24,7 @@ public class Event {
     }
 
     // ✅ Getters & Setters
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -45,7 +44,7 @@ public class Event {
         return ticket_price;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
