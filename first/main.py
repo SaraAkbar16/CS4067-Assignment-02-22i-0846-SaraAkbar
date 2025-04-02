@@ -63,7 +63,16 @@ def check_user(name: str, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.name == name).first()
     return {"exists": user is not None}
 
-SPRING_BOOT_API = "http://127.0.0.1:8080/api/events"
+SPRING_BOOT_API = "http://service-second:8080/api/events"
+
+@app.get("/events_json")
+def get_events_json():
+    try:
+        response = requests.get(SPRING_BOOT_API)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException:
+        raise HTTPException(status_code=500, detail="Failed to fetch events from Java API")
 
 @app.get("/events", response_class=HTMLResponse)
 def get_events(request: Request):
@@ -75,5 +84,14 @@ def get_events(request: Request):
     except requests.exceptions.RequestException:
         raise HTTPException(status_code=500, detail="Failed to fetch events from Java API")
 
+
+@app.get("/fetch-events")
+def fetch_events():
+    try:
+        response = requests.get(SPRING_BOOT_API)
+        return response.json() if response.status_code == 200 else {"error": "Failed to fetch events"}
+    except Exception as e:
+        return {"error": str(e)}
+    
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)

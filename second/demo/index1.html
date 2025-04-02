@@ -133,36 +133,37 @@
     <div class="proceed-container">
         <button id="proceedBtn" disabled>Proceed</button>
     </div>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("loadEvents").addEventListener("click", loadEvents);
             document.getElementById("proceedBtn").addEventListener("click", proceedWithEvents);
-            
+    
             // Extract the 'name' parameter from the URL
             const urlParams = new URLSearchParams(window.location.search);
             const name = urlParams.get("name") || "Guest";
             document.getElementById("username").textContent = name;
         });
-
-        let selectedEventIds = new Set(); // Use Set to track selected events
-
+    
+        let selectedEventIds = new Set();
+    
         function loadEvents() {
-            fetch("http://localhost:8080/api/events")
+            fetch("http://service-second:8080/api/events") // Change 'service-second' to 'localhost'
                 .then(response => {
+                    console.log("Status Code:", response.status);
+        console.log("Headers:", response.headers);
                     if (!response.ok) throw new Error("Failed to load events");
                     return response.json();
                 })
                 .then(data => {
                     console.log("Events loaded successfully:", data);
                     const eventTable = document.getElementById("eventTable");
-                    eventTable.innerHTML = ""; // Clear table before adding new data
-
+                    eventTable.innerHTML = "";
+    
                     if (data.length === 0) {
                         eventTable.innerHTML = "<tr><td colspan='6'>No events found</td></tr>";
                         return;
                     }
-
+    
                     data.forEach(event => {
                         let row = document.createElement("tr");
                         row.innerHTML = `  
@@ -175,7 +176,7 @@
                         `;
                         eventTable.appendChild(row);
                     });
-
+    
                     // Attach event listeners to checkboxes after rendering
                     document.querySelectorAll(".eventCheckbox").forEach(checkbox => {
                         checkbox.addEventListener("change", function () {
@@ -184,7 +185,6 @@
                             } else {
                                 selectedEventIds.delete(this.value);
                             }
-
                             console.log("Selected Event IDs:", Array.from(selectedEventIds));
                             document.getElementById("proceedBtn").disabled = selectedEventIds.size === 0;
                         });
@@ -195,15 +195,15 @@
                     alert("Error loading events. Please try again later.");
                 });
         }
-
+    
         function proceedWithEvents() {
             if (selectedEventIds.size > 0) {
-                const name = document.getElementById("username").textContent; // Get the username
-                const eventIds = Array.from(selectedEventIds).join(","); // Convert Set to a comma-separated string
-                
+                const name = document.getElementById("username").textContent;
+                const eventIds = Array.from(selectedEventIds).join(",");
                 window.location.href = `http://localhost:8003/index2?username=${encodeURIComponent(name)}&eventIds=${encodeURIComponent(eventIds)}`;
             }
         }
     </script>
+    
 </body>
 </html>

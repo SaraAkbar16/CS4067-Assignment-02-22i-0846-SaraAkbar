@@ -1,30 +1,42 @@
 package com.example.demo;
 
 import org.springframework.web.bind.annotation.*;
+
+/* 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import java.util.List;
-
-@CrossOrigin(origins = "*") // Allow frontend calls
+*/
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
 
-    @Autowired
-    private EventRepository eventRepository;
+    /*
+     * @Autowired
+     * private EventRepository eventRepository;
+     * 
+     * @GetMapping
+     * public ResponseEntity<List<Event>> getAllEvents() {
+     * List<Event> events = eventRepository.findAll();
+     * System.out.println("Fetched Events from DB: " + events); // Debugging Log
+     * return events.isEmpty() ? ResponseEntity.noContent().build() :
+     * ResponseEntity.ok(events);
+     * }
+     * 
+     * @GetMapping("/")
+     * public String home() {
+     * return "Welcome to the Event Service!";
+     * }
+     */
 
     @GetMapping
-    public ResponseEntity<List<Event>> getEvents() {
-        System.out.println(" API Called: /api/events");
-        List<Event> events = eventRepository.findAll();
+    public String getEvents() {
+        return "Events list";
+    }
 
-        if (events.isEmpty()) {
-            System.out.println(" No events found in MongoDB!");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(List.of());
-        }
-
-        System.out.println(" Events Retrieved: " + events.size());
-        return ResponseEntity.ok(events);
+    @GetMapping("/")
+    public String home() {
+        return "Welcome to the API!";
     }
 }

@@ -1,18 +1,16 @@
 package com.example.demo;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "event_listings")
+@Document(collection = "event")
 public class Event {
-    @Id
+
     private Integer id;
     private String event_name;
     private String location;
     private String timing;
     private Integer ticket_price;
 
-    // ✅ Constructors
     public Event() {
     }
 
@@ -23,7 +21,6 @@ public class Event {
         this.ticket_price = ticket_price;
     }
 
-    // ✅ Getters & Setters
     public int getId() {
         return id;
     }
